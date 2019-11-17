@@ -13,14 +13,23 @@ import { randomBytes } from 'crypto'
 
   const app = express()
 
+  app.get('/pictures/:pictureId', async (req, res) => {
+    const p = await picturesCollection.findOne({ id: req.params.pictureId })
+    res.header('Access-Control-Allow-Origin', 'http://localhost:8080')
+    res.json(p)
+  })
+
   const server = createServer(app)
   const io = SocketIO(server)
   io.on('connection', (socket) => {
-    socket.on('createPicture', (paths, cb) => {
-      const id = randomBytes(16).toString('hex')
-      const now = new Date()
-      picturesCollection.insertOne({ id, paths, createdAt: now, updatedAt: now })
-
+    socket.on('savePicture', async ({ id, title, paths }, cb) => {
+      if (id == null) {
+        id = randomBytes(16).toString('hex')
+        const now = new Date()
+        await picturesCollection.insertOne({ id, title, paths, createdAt: now, updatedAt: now })
+      } else {
+        await picturesCollection.updateOne({ id }, { $set: { title, paths } })
+      }
       cb(id)
     })
   })
