@@ -1,0 +1,6 @@
+{
+  "watch": ["."],
+  "exclude": ["node_modules", ".git"],
+  "exec": "yarn start",
+  "ext": "ts"
+}
