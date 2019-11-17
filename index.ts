@@ -19,7 +19,7 @@ import { randomBytes } from 'crypto'
     socket.on('createPicture', (paths, cb) => {
       const id = randomBytes(16).toString('hex')
       const now = new Date()
-      picturesCollection.insert({ id, paths, createdAt: now, updatedAt: now })
+      picturesCollection.insertOne({ id, paths, createdAt: now, updatedAt: now })
 
       cb(id)
     })
