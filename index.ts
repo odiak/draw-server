@@ -3,6 +3,7 @@ import { MongoClient } from 'mongodb'
 import SocketIO from 'socket.io'
 import { createServer } from 'http'
 import { randomBytes } from 'crypto'
+import cors from 'cors'
 ;(async () => {
   const mongoClient = await MongoClient.connect('mongodb://localhost:27017', {
     useUnifiedTopology: true
@@ -12,10 +13,10 @@ import { randomBytes } from 'crypto'
   picturesCollection.createIndex('id', { unique: true })
 
   const app = express()
+  app.use(cors({ origin: '*' }))
 
   app.get('/pictures/:pictureId', async (req, res) => {
     const p = await picturesCollection.findOne({ id: req.params.pictureId })
-    res.header('Access-Control-Allow-Origin', 'http://localhost:8080')
     res.json(p)
   })
 
