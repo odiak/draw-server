@@ -4,8 +4,11 @@ import SocketIO from 'socket.io'
 import { createServer } from 'http'
 import { randomBytes } from 'crypto'
 import cors from 'cors'
+
+const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017'
+const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
 ;(async () => {
-  const mongoClient = await MongoClient.connect('mongodb://localhost:27017', {
+  const mongoClient = await MongoClient.connect(DATABASE_URL, {
     useUnifiedTopology: true
   })
   const db = mongoClient.db('draw')
@@ -35,5 +38,5 @@ import cors from 'cors'
     })
   })
 
-  server.listen(8000)
+  server.listen(PORT)
 })()
