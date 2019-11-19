@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node -r ts-node/register index.ts",
-    "start:watch": "nodemon"
+    "start:watch": "nodemon",
+    "heroku-postbuild": "tsc"
   },
   "dependencies": {
     "@types/cors": "^2.8.6",
