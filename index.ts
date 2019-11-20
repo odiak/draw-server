@@ -5,7 +5,7 @@ import { createServer } from 'http'
 import { randomBytes } from 'crypto'
 import cors from 'cors'
 
-const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017'
+const DATABASE_URL = process.env.MONGODB_URI || 'mongodb://localhost:27017'
 const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
 ;(async () => {
   const mongoClient = await MongoClient.connect(DATABASE_URL, {
