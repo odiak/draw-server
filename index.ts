@@ -4,6 +4,7 @@ import SocketIO from 'socket.io'
 import { createServer } from 'http'
 import { randomBytes } from 'crypto'
 import cors from 'cors'
+import escapeHTML from 'escape-html'
 
 const DATABASE_URL = process.env.MONGODB_URI || 'mongodb://localhost:27017/draw'
 const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
@@ -21,6 +22,53 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
   app.get('/pictures/:pictureId', async (req, res) => {
     const p = await picturesCollection.findOne({ id: req.params.pictureId })
     res.json(p)
+  })
+
+  app.get('/p/:pictureId.svg', async (req, res) => {
+    const p = await picturesCollection.findOne({ id: req.params.pictureId })
+
+    if (p == null) {
+      res.status(404)
+      res.contentType('text/plain')
+      res.end('Not found')
+    }
+
+    const maxX = p.paths.reduce(
+      (max: number, path: any) =>
+        path.points.reduce((max: number, { x }: { x: number }) => Math.max(max, x), max),
+      0
+    )
+    const maxY = p.paths.reduce(
+      (max: number, path: any) =>
+        path.points.reduce((max: number, { y }: { y: number }) => Math.max(max, y), max),
+      0
+    )
+    const width = maxX + 20
+    const height = maxY + 20
+
+    const paths = p.paths.map(({ points, width, color }: any) => {
+      const desc = points
+        .map(({ x, y }: any, i: number) => {
+          if (i === 0) {
+            return `M${x},${y}`
+          } else {
+            return `L${x},${y}`
+          }
+        })
+        .join('')
+      const escapedDesc = escapeHTML(desc)
+      const escapedColor = escapeHTML(color)
+      const escapedWidth = escapeHTML(String(width))
+
+      return `<path d="${escapedDesc}" stroke="${escapedColor}" fill="none" stroke-width="${escapedWidth}" />`
+    })
+    const svg =
+      `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+      paths.join('') +
+      '</svg>'
+
+    res.contentType('image/svg+xml')
+    res.end(svg)
   })
 
   const server = createServer(app)
