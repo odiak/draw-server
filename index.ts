@@ -33,26 +33,35 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
       res.end('Not found')
     }
 
-    const maxX = p.paths.reduce(
-      (max: number, path: any) =>
-        path.points.reduce((max: number, { x }: { x: number }) => Math.max(max, x), max),
-      0
-    )
-    const maxY = p.paths.reduce(
-      (max: number, path: any) =>
-        path.points.reduce((max: number, { y }: { y: number }) => Math.max(max, y), max),
-      0
-    )
-    const width = maxX + 20
-    const height = maxY + 20
+    let minX = Number.POSITIVE_INFINITY
+    let maxX = Number.NEGATIVE_INFINITY
+    let minY = Number.POSITIVE_INFINITY
+    let maxY = Number.NEGATIVE_INFINITY
+    for (const path of p.paths) {
+      for (const { x, y } of path.points) {
+        minX = Math.min(minX, x)
+        maxX = Math.max(maxX, x)
+        minY = Math.min(minY, y)
+        maxY = Math.max(maxY, y)
+      }
+    }
+    if (!Number.isFinite(minX)) minX = 0
+    if (!Number.isFinite(maxX)) maxX = 0
+    if (!Number.isFinite(minY)) minY = 0
+    if (!Number.isFinite(maxY)) maxY = 0
+    const offset = 20
+    const baseX = minX - offset
+    const baseY = minY - offset
+    const width = maxX - minX + offset * 2
+    const height = maxY - minY + offset * 2
 
     const paths = p.paths.map(({ points, width, color }: any) => {
       const desc = points
         .map(({ x, y }: any, i: number) => {
           if (i === 0) {
-            return `M${x},${y}`
+            return `M${x - baseX},${y - baseY}`
           } else {
-            return `L${x},${y}`
+            return `L${x - baseX},${y - baseY}`
           }
         })
         .join('')
