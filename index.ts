@@ -24,7 +24,7 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
     res.json(p)
   })
 
-  app.get('/p/:pictureId.svg', async (req, res) => {
+  app.get('/:pictureId([0-9a-f]{32}).svg', async (req, res) => {
     const p = await picturesCollection.findOne({ id: req.params.pictureId })
 
     if (p == null) {
