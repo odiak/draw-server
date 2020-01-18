@@ -1,20 +1,14 @@
 import express from 'express'
-import { MongoClient } from 'mongodb'
 import SocketIO from 'socket.io'
 import { createServer } from 'http'
 import { randomBytes } from 'crypto'
 import cors from 'cors'
 import { pictureToSVG } from './src/pictureToSVG'
+import { connectToMongo } from './src/connectToMongo'
 
-const DATABASE_URL = process.env.MONGODB_URI || 'mongodb://localhost:27017/draw'
 const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
 ;(async () => {
-  const mongoClient = await MongoClient.connect(DATABASE_URL, {
-    useUnifiedTopology: true
-  })
-  const db = mongoClient.db()
-  const picturesCollection = db.collection('pictures')
-  picturesCollection.createIndex('id', { unique: true })
+  const { picturesCollection } = await connectToMongo()
 
   const app = express()
   app.use(cors({ origin: '*' }))
