@@ -37,7 +37,7 @@ export function pictureToSVG(picture: any): string {
     const escapedColor = escapeHTML(color)
     const escapedWidth = escapeHTML(String(width))
 
-    return `<path d="${escapedDesc}" stroke="${escapedColor}" fill="none" stroke-width="${escapedWidth}" />`
+    return `<path d="${escapedDesc}" stroke="${escapedColor}" fill="none" stroke-width="${escapedWidth}" stroke-linecap="round" stroke-linejoin="round" />`
   })
   return (
     `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
