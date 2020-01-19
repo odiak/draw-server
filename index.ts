@@ -20,6 +20,13 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
 
   app.get('/pictures/:pictureId', async (req, res) => {
     let p = await picturesCollection.findOne({ id: req.params.pictureId })
+
+    if (p == null) {
+      res.status(404)
+      res.json({})
+      return
+    }
+
     p = await setIdForPath(picturesCollection, p)
     res.json(p)
   })
@@ -48,9 +55,27 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
         const now = new Date()
         await picturesCollection.insertOne({ id, title, paths, createdAt: now, updatedAt: now })
       } else {
-        await picturesCollection.updateOne({ id }, { $set: { title, paths } })
+        await picturesCollection.updateOne({ id }, { $set: { title, paths } }, { upsert: true })
       }
       cb(id)
+    })
+
+    socket.on('setTitle', async ({ pictureId, title }) => {
+      picturesCollection.updateOne({ id: pictureId }, { $set: { title } })
+    })
+
+    socket.on('addAndRemovePaths', async ({ pictureId, pathsToAdd, pathIdsToRemove }) => {
+      const update: any = {}
+      if (pathsToAdd != null && pathsToAdd.length > 0) {
+        update['$push'] = { paths: { $each: pathsToAdd } }
+      }
+      if (pathIdsToRemove != null && pathIdsToRemove.length > 0) {
+        update['$pull'] = { paths: { id: { $in: pathIdsToRemove } } }
+      }
+
+      if (Object.keys(update).length > 0) {
+        await picturesCollection.updateOne({ id: pictureId }, update)
+      }
     })
   })
 
