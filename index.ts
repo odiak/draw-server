@@ -58,8 +58,8 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
 })()
 
 async function setIdForPaths(picturesCollection: Collection) {
-  const cur = await picturesCollection.find()
-  while (cur.hasNext()) {
+  const cur = await picturesCollection.find({})
+  while (await cur.hasNext()) {
     const picture = await cur.next()
     await setIdForPath(picturesCollection, picture)
   }
@@ -80,6 +80,6 @@ async function setIdForPath(picturesCollection: Collection, picture: any): Promi
   if (!changed) return picture
 
   const newPicture = { ...picture, paths: newPaths }
-  picturesCollection.updateOne({ id: picture.id }, newPicture)
+  picturesCollection.updateOne({ id: picture.id }, { $set: { paths: newPaths } })
   return newPicture
 }
