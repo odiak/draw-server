@@ -60,12 +60,11 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
       cb(id)
     })
 
-    socket.on('setTitle', async ({ pictureId, title }) => {
-      picturesCollection.updateOne({ id: pictureId }, { $set: { title } })
-    })
-
-    socket.on('addAndRemovePaths', async ({ pictureId, pathsToAdd, pathIdsToRemove }) => {
+    socket.on('updatePicture', async ({ pictureId, title, pathsToAdd, pathIdsToRemove }) => {
       const update: any = {}
+      if (title != null) {
+        update['$set'] = { title }
+      }
       if (pathsToAdd != null && pathsToAdd.length > 0) {
         update['$push'] = { paths: { $each: pathsToAdd } }
       }
@@ -74,8 +73,20 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
       }
 
       if (Object.keys(update).length > 0) {
-        await picturesCollection.updateOne({ id: pictureId }, update)
+        await picturesCollection.updateOne({ id: pictureId }, update, { upsert: true })
+
+        socket
+          .to(pictureId)
+          .emit('pictureUpdated', { title, pictureId, pathsToAdd, pathIdsToRemove })
       }
+    })
+
+    socket.on('watchPicture', async ({ pictureId }) => {
+      socket.join(pictureId)
+    })
+
+    socket.on('unwatchPicture', async ({ pictureId }) => {
+      socket.leave(pictureId)
     })
   })
 
