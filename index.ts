@@ -19,8 +19,8 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
   })
 
   app.get('/pictures/:pictureId', async (req, res) => {
-    const p = await picturesCollection.findOne({ id: req.params.pictureId })
-    await setIdForPath(picturesCollection, p)
+    let p = await picturesCollection.findOne({ id: req.params.pictureId })
+    p = await setIdForPath(picturesCollection, p)
     res.json(p)
   })
 
