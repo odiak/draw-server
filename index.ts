@@ -52,20 +52,24 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
   const io = SocketIO(server)
   io.on('connection', (socket) => {
     socket.on('savePicture', async ({ id, title, paths }, cb) => {
+      const now = new Date()
       if (id == null) {
         id = generateId()
-        const now = new Date()
         await picturesCollection.insertOne({ id, title, paths, createdAt: now, updatedAt: now })
       } else {
-        await picturesCollection.updateOne({ id }, { $set: { title, paths } }, { upsert: true })
+        await picturesCollection.updateOne(
+          { id },
+          { $set: { title, paths, updatedAt: now } },
+          { upsert: true }
+        )
       }
       cb(id)
     })
 
     socket.on('updatePicture', async ({ pictureId, title, pathsToAdd, pathIdsToRemove }) => {
-      const update: any = {}
+      const update: any = { $set: { updatedAt: new Date() } }
       if (title != null) {
-        update['$set'] = { title }
+        update['$set'] = { ...(update['$set'] || {}), title }
       }
       if (pathsToAdd != null && pathsToAdd.length > 0) {
         update['$push'] = { paths: { $each: pathsToAdd } }
