@@ -28,6 +28,7 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
     }
 
     p = await setIdForPath(picturesCollection, p)
+    res.set('')
     res.json(p)
   })
 
@@ -43,6 +44,7 @@ const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
     const svg = pictureToSVG(p)
 
     res.contentType('image/svg+xml')
+    res.set('Cache-Control', 'private, max-age=600')
     res.end(svg)
   })
 
