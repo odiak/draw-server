@@ -3,3 +3,5 @@ node_modules
 build
 # Local Netlify folder
 .netlify
+.yarn
+.pnp.js
