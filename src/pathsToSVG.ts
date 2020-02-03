@@ -1,11 +1,22 @@
 import escapeHTML from 'escape-html'
 
-export function pictureToSVG(picture: any): string {
+export type Point = {
+  x: number
+  y: number
+}
+
+export type Path = {
+  color: string
+  width: number
+  points: Point[]
+}
+
+export function pathsToSVG(paths: Array<Path>): string {
   let minX = Number.POSITIVE_INFINITY
   let maxX = Number.NEGATIVE_INFINITY
   let minY = Number.POSITIVE_INFINITY
   let maxY = Number.NEGATIVE_INFINITY
-  for (const path of picture.paths) {
+  for (const path of paths) {
     for (const { x, y } of path.points) {
       minX = Math.min(minX, x)
       maxX = Math.max(maxX, x)
@@ -23,7 +34,7 @@ export function pictureToSVG(picture: any): string {
   const width = maxX - minX + offset * 2
   const height = maxY - minY + offset * 2
 
-  const paths = picture.paths.map(({ points, width, color }: any) => {
+  const pathStrs = paths.map(({ points, width, color }: any) => {
     const desc = points
       .map(({ x, y }: any, i: number) => {
         if (i === 0) {
@@ -41,7 +52,7 @@ export function pictureToSVG(picture: any): string {
   })
   return (
     `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-    paths.join('') +
+    pathStrs.join('') +
     '</svg>'
   )
 }
