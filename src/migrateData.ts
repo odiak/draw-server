@@ -53,7 +53,11 @@ async function main() {
         await processBatch(() => {
           batch.set(
             doc.collection('paths').doc(pathId),
-            { ...rest, points: rawPoints },
+            {
+              ...rest,
+              points: rawPoints,
+              timestamp: admin.firestore.Timestamp.fromDate(new Date())
+            },
             { merge: true }
           )
         })
