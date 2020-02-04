@@ -21,8 +21,9 @@ app.get('/:pictureId([0-9a-f]{32}).svg', async (req, res) => {
     .collection('paths')
     .orderBy('timestamp')
     .get()
+    .catch(() => null)
 
-  const paths: Path[] = pathsSnapshot.docs.map((doc) => {
+  const paths: Path[] = (pathsSnapshot?.docs ?? []).map((doc) => {
     const data = doc.data()
     const points: Point[] = []
     const rawPoints: number[] = data.points
