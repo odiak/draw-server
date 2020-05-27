@@ -11,6 +11,8 @@ admin.initializeApp({
 const PORT = ((p) => (p != null ? parseInt(p) : 8000))(process.env.PORT)
 const app = express()
 
+app.set('trust proxy', true)
+
 app.get('/:pictureId([0-9a-f]{32}).svg', async (req, res) => {
   const { pictureId } = req.params
 
@@ -33,6 +35,10 @@ app.get('/:pictureId([0-9a-f]{32}).svg', async (req, res) => {
     }
     return { points, color: data.color, width: data.width }
   })
+
+  let width: number | null = null
+  let height: number | null = null
+  let scale = 1.0
 
   const svg = pathsToSVG(paths)
   res.contentType('image/svg+xml')
