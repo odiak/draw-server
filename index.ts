@@ -3,6 +3,7 @@ import { createServer } from 'http'
 import { pathsToSvg } from './src/pathsToSvg'
 import admin from 'firebase-admin'
 import { getPathsByPictureId } from './src/getPathsByPictureId'
+import { pathsToPng } from './src/pathsToPng'
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
@@ -23,6 +24,17 @@ app.get('/:pictureId([0-9a-f]{32}).svg', async (req, res) => {
   res.contentType('image/svg+xml')
   res.set('Cache-Control', 'private, max-age=600')
   res.end(svg)
+})
+
+app.get('/:pictureId([0-9a-f]{32}).png', async (req, res) => {
+  const { pictureId } = req.params
+
+  const paths = await getPathsByPictureId(pictureId)
+
+  const png = pathsToPng(paths)
+  res.contentType('image/png')
+  res.set('Cache-Control', 'private, max-age=600')
+  png.pipe(res)
 })
 
 const server = createServer(app)
