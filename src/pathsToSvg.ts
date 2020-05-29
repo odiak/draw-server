@@ -2,7 +2,7 @@ import escapeHTML from 'escape-html'
 import { Path } from './commonTypes'
 import { measure } from './measure'
 
-export function pathsToSVG(paths: Array<Path>): string {
+export function pathsToSvg(paths: Array<Path>): string {
   const { width, height, baseX, baseY } = measure(paths)
 
   const pathStrs = paths.map(({ points, width, color }: any) => {

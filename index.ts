@@ -1,6 +1,6 @@
 import express from 'express'
 import { createServer } from 'http'
-import { pathsToSVG } from './src/pathsToSvg'
+import { pathsToSvg } from './src/pathsToSvg'
 import admin from 'firebase-admin'
 import { getPathsByPictureId } from './src/getPathsByPictureId'
 
@@ -19,7 +19,7 @@ app.get('/:pictureId([0-9a-f]{32}).svg', async (req, res) => {
 
   const paths = await getPathsByPictureId(pictureId)
 
-  const svg = pathsToSVG(paths)
+  const svg = pathsToSvg(paths)
   res.contentType('image/svg+xml')
   res.set('Cache-Control', 'private, max-age=600')
   res.end(svg)
