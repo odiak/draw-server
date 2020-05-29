@@ -1,6 +1,6 @@
 import express from 'express'
 import { createServer } from 'http'
-import { pathsToSVG } from './src/pathsToSVG'
+import { pathsToSVG } from './src/pathsToSvg'
 import admin from 'firebase-admin'
 import { getPathsByPictureId } from './src/getPathsByPictureId'
 
