@@ -1,6 +1,7 @@
 import express from 'express'
 import { createServer } from 'http'
-import { pathsToSVG, Path, Point } from './src/pathsToSVG'
+import { pathsToSVG } from './src/pathsToSVG'
+import { Path, Point } from './src/commonTypes'
 import admin from 'firebase-admin'
 
 admin.initializeApp({

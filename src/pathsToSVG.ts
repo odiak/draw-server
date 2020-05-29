@@ -1,15 +1,5 @@
 import escapeHTML from 'escape-html'
-
-export type Point = {
-  x: number
-  y: number
-}
-
-export type Path = {
-  color: string
-  width: number
-  points: Point[]
-}
+import { Path } from './commonTypes'
 
 export function pathsToSVG(paths: Array<Path>): string {
   let minX = Number.POSITIVE_INFINITY
