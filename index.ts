@@ -15,26 +15,28 @@ const app = express()
 
 app.set('trust proxy', true)
 
-app.get('/:pictureId([0-9a-f]{32}).svg', async (req, res) => {
-  const { pictureId } = req.params
+app.get('/:pictureId([0-9a-f]{32}).:extension(svg|png)', async (req, res) => {
+  const { pictureId, extension } = req.params
 
   const paths = await getPathsByPictureId(pictureId)
 
-  const svg = pathsToSvg(paths)
-  res.contentType('image/svg+xml')
-  res.set('Cache-Control', 'private, max-age=600')
-  res.end(svg)
-})
+  switch (extension) {
+    case 'svg': {
+      const svg = pathsToSvg(paths)
+      res.contentType('image/svg+xml')
+      res.set('Cache-Control', 'private, max-age=600')
+      res.end(svg)
+      break
+    }
 
-app.get('/:pictureId([0-9a-f]{32}).png', async (req, res) => {
-  const { pictureId } = req.params
-
-  const paths = await getPathsByPictureId(pictureId)
-
-  const png = pathsToPng(paths)
-  res.contentType('image/png')
-  res.set('Cache-Control', 'private, max-age=600')
-  png.pipe(res)
+    case 'png': {
+      const png = pathsToPng(paths)
+      res.contentType('image/png')
+      res.set('Cache-Control', 'private, max-age=600')
+      png.pipe(res)
+      break
+    }
+  }
 })
 
 const server = createServer(app)
