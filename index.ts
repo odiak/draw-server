@@ -35,7 +35,7 @@ app.get(
       }
 
       case 'png': {
-        const png = pathsToPng(paths)
+        const png = pathsToPng(paths, options)
         res.contentType('image/png')
         res.set('Cache-Control', 'private, max-age=600')
         png.pipe(res)
