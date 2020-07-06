@@ -4,6 +4,7 @@ import { pathsToSvg } from './src/pathsToSvg'
 import admin from 'firebase-admin'
 import { getPathsByPictureId } from './src/getPathsByPictureId'
 import { pathsToPng } from './src/pathsToPng'
+import { parseModifiers } from './src/parseModifiers'
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
@@ -15,29 +16,34 @@ const app = express()
 
 app.set('trust proxy', true)
 
-app.get('/:pictureId([0-9a-f]{32}).:extension(svg|png)', async (req, res) => {
-  const { pictureId, extension } = req.params
+app.get(
+  '/:pictureId([0-9a-f]{32}):modifiers((?:-[^.]*)?).:extension(svg|png)',
+  async (req, res) => {
+    const { pictureId, extension, modifiers } = req.params
 
-  const paths = await getPathsByPictureId(pictureId)
+    const options = parseModifiers(modifiers)
 
-  switch (extension) {
-    case 'svg': {
-      const svg = pathsToSvg(paths)
-      res.contentType('image/svg+xml')
-      res.set('Cache-Control', 'private, max-age=600')
-      res.end(svg)
-      break
-    }
+    const paths = await getPathsByPictureId(pictureId)
 
-    case 'png': {
-      const png = pathsToPng(paths)
-      res.contentType('image/png')
-      res.set('Cache-Control', 'private, max-age=600')
-      png.pipe(res)
-      break
+    switch (extension) {
+      case 'svg': {
+        const svg = pathsToSvg(paths, options)
+        res.contentType('image/svg+xml')
+        res.set('Cache-Control', 'private, max-age=600')
+        res.end(svg)
+        break
+      }
+
+      case 'png': {
+        const png = pathsToPng(paths)
+        res.contentType('image/png')
+        res.set('Cache-Control', 'private, max-age=600')
+        png.pipe(res)
+        break
+      }
     }
   }
-})
+)
 
 const server = createServer(app)
 

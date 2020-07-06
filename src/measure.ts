@@ -1,8 +1,16 @@
 import { Path } from './commonTypes'
 
 export function measure(
-  paths: Array<Path>
-): { width: number; height: number; baseX: number; baseY: number } {
+  paths: Array<Path>,
+  scale: number = 1
+): {
+  width: number
+  height: number
+  baseX: number
+  baseY: number
+  offsetX: number
+  offsetY: number
+} {
   let minX = Number.POSITIVE_INFINITY
   let maxX = Number.NEGATIVE_INFINITY
   let minY = Number.POSITIVE_INFINITY
@@ -20,10 +28,8 @@ export function measure(
   if (!Number.isFinite(minY)) minY = 0
   if (!Number.isFinite(maxY)) maxY = 0
   const offset = 20
-  const baseX = minX - offset
-  const baseY = minY - offset
-  const width = maxX - minX + offset * 2
-  const height = maxY - minY + offset * 2
+  const width = (maxX - minX) * scale + offset * 2
+  const height = (maxY - minY) * scale + offset * 2
 
-  return { width, height, baseX, baseY }
+  return { width, height, baseX: minX, baseY: minY, offsetX: offset, offsetY: offset }
 }
