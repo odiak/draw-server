@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "start": "node -r ts-node/register index.ts",
-    "start:watch": "nodemon"
+    "start:watch": "nodemon",
+    "build": "tsc"
   },
   "dependencies": {
     "@types/escape-html": "^0.0.20",
