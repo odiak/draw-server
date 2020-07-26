@@ -16,9 +16,10 @@ export async function getPathsByPictureId(pictureId: string): Promise<Array<Path
     const points: Point[] = []
     const rawPoints: number[] = data.points
     const length = rawPoints.length
+    const isBezier = !!data.isBezier
     for (let i = 0; i + 1 < length; i += 2) {
       points.push({ x: rawPoints[i], y: rawPoints[i + 1] })
     }
-    return { points, color: data.color, width: data.width }
+    return { points, color: data.color, width: data.width, isBezier }
   })
 }

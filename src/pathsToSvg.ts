@@ -9,18 +9,32 @@ export function pathsToSvg(paths: Array<Path>, options: ModifierOptions): string
     ...options
   }
 
-  const pathStrs = paths.map(({ points, width, color }: any) => {
-    const desc = points
-      .map(({ x, y }: any, i: number) => {
-        const x_ = (x - baseX) * scale + offsetX
-        const y_ = (y - baseY) * scale + offsetY
-        if (i === 0) {
-          return `M${x_},${y_}`
-        } else {
-          return `L${x_},${y_}`
-        }
-      })
-      .join('')
+  const pathStrs = paths.map(({ points, width, color, isBezier }) => {
+    const desc = isBezier
+      ? points
+          .map(({ x, y }, i) => {
+            const x_ = (x - baseX) * scale + offsetX
+            const y_ = (y - baseY) * scale + offsetY
+            if (i === 0) {
+              return `M${x_},${y_}`
+            } else if (i % 3 === 1) {
+              return `C${x_},${y_}`
+            } else {
+              return `,${x_},${y_}`
+            }
+          })
+          .join('')
+      : points
+          .map(({ x, y }, i) => {
+            const x_ = (x - baseX) * scale + offsetX
+            const y_ = (y - baseY) * scale + offsetY
+            if (i === 0) {
+              return `M${x_},${y_}`
+            } else {
+              return `L${x_},${y_}`
+            }
+          })
+          .join('')
     const escapedDesc = escapeHTML(desc)
     const escapedColor = escapeHTML(color)
     const escapedLineWidth = escapeHTML(String(width * scale))

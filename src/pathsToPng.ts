@@ -22,14 +22,32 @@ export function pathsToPng(paths: Array<Path>, options: ModifierOptions): NodeJS
     ctx.strokeStyle = path.color
     let first = true
     ctx.beginPath()
-    for (const { x, y } of path.points) {
-      const realX = (x - baseX) * scale + offsetX
-      const realY = (y - baseY) * scale + offsetY
-      if (first) {
-        ctx.moveTo(realX, realY)
-        first = false
-      } else {
-        ctx.lineTo(realX, realY)
+    if (path.isBezier) {
+      let args: number[] = []
+      for (const { x, y } of path.points) {
+        const realX = (x - baseX) * scale + offsetX
+        const realY = (y - baseY) * scale + offsetY
+        if (first) {
+          ctx.moveTo(realX, realY)
+          first = false
+        } else {
+          args.push(realX, realY)
+          if (args.length === 6) {
+            ctx.bezierCurveTo(...(args as [number, number, number, number, number, number]))
+            args = []
+          }
+        }
+      }
+    } else {
+      for (const { x, y } of path.points) {
+        const realX = (x - baseX) * scale + offsetX
+        const realY = (y - baseY) * scale + offsetY
+        if (first) {
+          ctx.moveTo(realX, realY)
+          first = false
+        } else {
+          ctx.lineTo(realX, realY)
+        }
       }
     }
     ctx.stroke()
