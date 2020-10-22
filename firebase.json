@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "predeploy": ["yarn workspace functions run build"],
+    "runtime": "nodejs12"
+  }
+}
