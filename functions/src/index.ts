@@ -1,6 +1,8 @@
 import * as functions from 'firebase-functions'
 import * as firebase from 'firebase-admin'
 
+firebase.initializeApp()
+
 const defaultRegion = 'asia-northeast1'
 
 export const migrateData = functions.region(defaultRegion).https.onCall(
