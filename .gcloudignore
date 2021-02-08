@@ -19,3 +19,4 @@ node_modules/
 .yarn
 .vscode
 .yarnrc.yml
+build

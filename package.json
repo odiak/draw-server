@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node -r ts-node/register index.ts",
     "start:watch": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "gcp-build": "tsc"
   },
   "dependencies": {
     "@types/escape-html": "^0.0.20",
